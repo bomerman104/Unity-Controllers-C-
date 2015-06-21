@@ -1,0 +1,85 @@
+using UnityEngine;
+using System.Collections;
+ 
+public class Character : MonoBehaviour
+{
+CharacterController character;
+ 
+//variables
+public float speed = 6.00f;
+public float jumpspeed = 10.00f;
+public float gravity = 20.00f;
+public float lookspeed = 10.00f;
+ 
+float verticalRotation = 0;
+ 
+public GameObject Pcamera;
+ 
+ 
+public float maxAngle = 60.00f;
+ 
+private Vector3 movedirection = Vector3.zero;
+ 
+// Use this for initialization
+void Start ()
+{
+//character controller that allows the player to move and jump.
+character = GetComponent<CharacterController>();
+ 
+//hides the mouse while in game
+Cursor.visible = false;
+ 
+ 
+}
+ 
+// Update is called once per frame
+void Update ()
+{
+//character controller for camera controlls.
+float rotx = Input.GetAxis("Mouse X");
+ 
+ 
+ 
+//controlls player gravity as well as a players jump speed.
+if(character.isGrounded)
+{
+movedirection = new Vector3(0,0,Input.GetAxis("Vertical"));
+movedirection = transform.TransformDirection(movedirection);
+movedirection *=speed;
+if (Input.GetButton("Jump"))
+movedirection.y = jumpspeed;
+}
+movedirection.y -= gravity * Time.deltaTime;
+character.Move(movedirection * (gravity * Time.deltaTime));
+ 
+//Controlls character movement.
+if(Input.GetKey (KeyCode.A) && character.isGrounded == true){
+character.transform.Translate(new Vector3(- speed * Time.deltaTime,0,0));
+}
+ 
+if(Input.GetKey (KeyCode.S) && character.isGrounded == true){
+character.transform.Translate(new Vector3(0,0,- speed * Time.deltaTime));
+}
+ 
+if(Input.GetKey (KeyCode.D) && character.isGrounded == true){
+character.transform.Translate(new Vector3(speed * Time.deltaTime,0,0));
+}
+ 
+if(Input.GetKey (KeyCode.W) && character.isGrounded == true){
+character.transform.Translate(new Vector3(0,0,speed * Time.deltaTime));
+}
+ 
+ 
+ 
+//controlls the camera rotation on the Y axis.
+character.transform.Rotate (0, rotx * (lookspeed * Time.deltaTime), 0);
+ 
+//Controlls the camera rotation on the X axis.
+verticalRotation -= Input.GetAxis ("Mouse Y") * (lookspeed * Time.deltaTime);
+verticalRotation = Mathf.Clamp (verticalRotation, - maxAngle, maxAngle);
+Camera.main.transform.localRotation = Quaternion.Euler (verticalRotation, 0, 0);
+ 
+ 
+ 
+}
+}
